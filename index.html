@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Style -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <title>Sistem Pendukung Keputusan</title>
+</head>
+
+<body>
+    <div id="first">
+        <label for="jumlahAlternatif">Masukkan Jumlah Alternatif(Calon Dosen)</label>
+        <input type="number" name="" id="jumlahAlternatif">
+        <button id="init">Lanjutkan</button>
+    </div>
+    <main>
+
+    </main>
+
+    <!-- Script -->
+    <script src="assets/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="assets/vendor/underscore/underscore-min.js"></script>
+    <script>
+        var namaCalonDosen = [];
+        var Wij = [0.3, 0.2, 0.3, 0.2];
+        var kriteria = [];
+        pemenang = 0;
+        $(document).ready(function () {
+            $("#init").click(function () {
+                var jumlahAlternatif = $("#jumlahAlternatif").val();
+                if (jumlahAlternatif > 0) {
+                    masukkanAlternatif(jumlahAlternatif);
+                } else if (jumlahAlternatif <= 0) {
+                    alert("galat, jumlah alternatif (calon dosen) minimal 1");
+                    $("#jumlahAlternatif").val("");
+                }
+            })
+        });
+        function tentukanKriteria() {
+
+        }
+        function masukkanAlternatif(jumlah) {
+            $("#first").remove();
+            $("main").append(
+                '<div class="form" id="formDosen">' +
+                '<label for="dosen">Nama Calon Dosen</label>' +
+                '<input type="text" name="" id="dosen">' +
+                '<button id="next" onclick="simpanNamaCalonDosen(' + jumlah + ')">Next</button>' +
+                '</div>'
+            );
+        }
+        function simpanNamaCalonDosen(jumlah) {
+            if ($("#dosen").val() != "" && namaCalonDosen.length < jumlah) namaCalonDosen.push($("#dosen").val());
+            $("#dosen").val("");
+            if (namaCalonDosen.length == jumlah) {
+                renderIputan()
+            }
+        }
+        function renderIputan() {
+            console.log("Nama Nama Calon");
+            console.log(namaCalonDosen);
+            $("#formDosen").remove();
+            $("main").append('<div id="formNilai"></div>');
+            for (i = 0; i < namaCalonDosen.length; i++) {
+                $("#formNilai").append(
+                    '<h3>Nama Calon Dosen: ' + namaCalonDosen[i] + '</h3>' +
+                    '<label for="ipk' + namaCalonDosen[i].split(" ").join("") + '"> IPK :</label>' +
+                    '<input min="0" max="4" id="ipk' + namaCalonDosen[i].split(" ").join("") + '" type="number" step="0.01" pattern="^\d+(?:\.\d{1,2})?$">' +
+                    '<label for="tpa' + namaCalonDosen[i].split(" ").join("") + '"> TPA :</label>' +
+                    '<input min="0" max=100 id="tpa' + namaCalonDosen[i].split(" ").join("") + '" type="number"> ' +
+                    '<label for="toefl' + namaCalonDosen[i].split(" ").join("") + '"> TOEFL :</label>' +
+                    '<input min="0" max=600 id="toefl' + namaCalonDosen[i].split(" ").join("") + '" type="number"> ' +
+                    '<label for="wawancara' + namaCalonDosen[i].split(" ").join("") + '"> WAWANCARA :</label>' +
+                    '<input min="0" max=100 id="wawancara' + namaCalonDosen[i].split(" ").join("") + '" type="number"> '
+                );
+            }
+            $("#formNilai").append('</br><button id="simpan" onclick="simpanNilai()">Hitung</button>');
+        }
+        function simpanNilai() {
+            arrayOfIPK = [];
+            arrayOfTPA = [];
+            arrayOfTOEFL = [];
+            arrayOfWAWANCARA = [];
+            kecocokan = [];
+
+            // memasukkan nilai
+            for (i = 0; i < namaCalonDosen.length; i++) {
+                ipk = $("#ipk" + namaCalonDosen[i]).val();
+                tpa = $("#tpa" + namaCalonDosen[i]).val();
+                toefl = $("#toefl" + namaCalonDosen[i]).val();
+                wawancara = $("#wawancara" + namaCalonDosen[i]).val();
+                // ipk section
+                if (ipk > 4 || ipk < 0) {
+                    alert("gagal inputan tidak sesuai, IPK tidak boleh kurang dari 0 atau lebih dari 4");
+                    stop();
+                } else {
+                    arrayOfIPK[namaCalonDosen[i]] = parseFloat(ipk);
+                }
+                // TPA section
+                if (tpa < 0 || tpa > 100) {
+                    alert("gagal inputan tidak sesuai, TPA tidak boleh kurang dari 0 atau lebih dari 100");
+                    stop();
+                } else {
+                    arrayOfTPA[namaCalonDosen[i]] = parseInt(tpa);
+                }
+                if (toefl < 0) {
+                    alert("gagal inputan tidak sesuai, TOEFL tidak boleh kurang dari 0");
+                    stop();
+                } else {
+                    arrayOfTOEFL[namaCalonDosen[i]] = parseInt(toefl);
+                }
+                if (wawancara < 0 || wawancara > 100) {
+                    alert("gagal inputan tidak sesuai, Wawancara tidak boleh kurang dari 0 atau lebih dari 100");
+                    stop();
+                } else {
+                    arrayOfWAWANCARA[namaCalonDosen[i]] = parseInt(wawancara);
+                }
+            }
+            // Konversi
+            for (i = 0; i < namaCalonDosen.length; i++) {
+                // IPK section
+                if (arrayOfIPK[namaCalonDosen[i]] > 3.75 && arrayOfIPK[namaCalonDosen[i]] <= 4) {
+                    kecocokan.push([5]);
+                } else if (arrayOfIPK[namaCalonDosen[i]] >= 3.25 && arrayOfIPK[namaCalonDosen[i]] <= 3.75) {
+                    kecocokan.push([4]);
+                } else if (arrayOfIPK[namaCalonDosen[i]] >= 3.00 && arrayOfIPK[namaCalonDosen[i]] < 3.25) {
+                    kecocokan.push([3]);
+                } else if (arrayOfIPK[namaCalonDosen[i]] >= 2.75 && arrayOfIPK[namaCalonDosen[i]] < 3) {
+                    kecocokan.push([2]);
+                } else if (arrayOfIPK[namaCalonDosen[i]] < 2.75) {
+                    kecocokan.push([1]);
+                }
+
+                // TPA Section
+                if (arrayOfTPA[namaCalonDosen[i]] >= 75 && arrayOfTPA[namaCalonDosen[i]] <= 100) {
+                    kecocokan[i].push(5);
+                } else if (arrayOfTPA[namaCalonDosen[i]] >= 65 && arrayOfTPA[namaCalonDosen[i]] <= 75) {
+                    kecocokan[i].push(4);
+                } else if (arrayOfTPA[namaCalonDosen[i]] >= 55 && arrayOfTPA[namaCalonDosen[i]] < 65) {
+                    kecocokan[i].push(3);
+                } else if (arrayOfTPA[namaCalonDosen[i]] >= 45 && arrayOfTPA[namaCalonDosen[i]] < 55) {
+                    kecocokan[i].push(2);
+                } else if (arrayOfTPA[namaCalonDosen[i]] < 45) {
+                    kecocokan[i].push(1);
+                }
+
+                // Toefl Section
+                if (arrayOfTOEFL[namaCalonDosen[i]] >= 600) {
+                    kecocokan[i].push(5);
+                } else if (arrayOfTOEFL[namaCalonDosen[i]] >= 500 && arrayOfTOEFL[namaCalonDosen[i]] < 600) {
+                    kecocokan[i].push(4);
+                } else if (arrayOfTOEFL[namaCalonDosen[i]] >= 450 && arrayOfTOEFL[namaCalonDosen[i]] < 500) {
+                    kecocokan[i].push(3);
+                } else if (arrayOfTOEFL[namaCalonDosen[i]] >= 350 && arrayOfTOEFL[namaCalonDosen[i]] < 450) {
+                    kecocokan[i].push(2);
+                } else if (arrayOfTOEFL[namaCalonDosen[i]] < 350) {
+                    kecocokan[i].push(1);
+                }
+
+                // Wawancara Section
+                if (arrayOfWAWANCARA[namaCalonDosen[i]] > 75 && arrayOfWAWANCARA[namaCalonDosen[i]] <= 100) {
+                    kecocokan[i].push(5);
+                } else if (arrayOfWAWANCARA[namaCalonDosen[i]] >= 65 && arrayOfWAWANCARA[namaCalonDosen[i]] < 75) {
+                    kecocokan[i].push(4);
+                } else if (arrayOfWAWANCARA[namaCalonDosen[i]] >= 55 && arrayOfWAWANCARA[namaCalonDosen[i]] < 65) {
+                    kecocokan[i].push(3);
+                } else if (arrayOfWAWANCARA[namaCalonDosen[i]] >= 45 && arrayOfWAWANCARA[namaCalonDosen[i]] < 55) {
+                    kecocokan[i].push(2);
+                } else if (arrayOfWAWANCARA[namaCalonDosen[i]] < 45) {
+                    kecocokan[i].push(1);
+                }
+            }
+            matrixKeputusan = kecocokan;
+            normalisasiMatrix(matrixKeputusan);
+        }
+        function normalisasiMatrix(matrix) {
+            matrixNormal = [];
+            maximum = [];
+            transpose = []
+            // membuat array maximum untuk memudahkan
+            for (i = 0; i < matrixKeputusan.length; i++) {
+                column = [];
+                for (j = 0; j < matrixKeputusan[i].length; j++) {
+                    column.push(matrixKeputusan[j][i]);
+                }
+                max = Math.max.apply(null, column);
+                maximum.push(max);
+            }
+            // menormalisasikan matriks keputusan
+            for (i = 0; i < matrix.length; i++) {
+                for (j = 0; j < matrix[i].length; j++) {
+                    if (j == 0) {
+                        matrixNormal.push([(matrix[j][i] / maximum[i]).toFixed(2)]);
+                    } else {
+                        matrixNormal[i].push((matrix[j][i] / maximum[i]).toFixed(2));
+                    }
+                }
+            }
+            // Transpose Matrix
+            matrixNormal = _.zip.apply(_, matrixNormal);
+            console.log("Matriks Keputusan: ");
+            console.log(matrix);
+            console.log("Matriks Normalisasi: ");
+            console.log(matrixNormal);
+            hitungY(matrixNormal)
+        }
+        function hitungY(matrix) {
+            matrixY = [];
+            for (i = 0; i < matrix.length; i++) {
+                for (j = 0; j < matrix[i].length; j++) {
+                    // max = Math.max.apply(null, matrix[i]);
+                    if (j == 0) {
+                        matrixY.push([(Wij[j] * matrix[i][j]).toFixed(2)]);
+                    } else {
+                        matrixY[i].push((Wij[j] * matrix[i][j]).toFixed(2));
+                    }
+                }
+            }
+            console.log("Matrix Y: ")
+            console.log(matrixY);
+            hitungSolusiIdeal(matrixY);
+        }
+        function hitungSolusiIdeal(matrixY) {
+            APlus = [];
+            AMinus = [];
+            for (i = 0; i < matrixY.length; i++) {
+                column = [];
+                for (j = 0; j < matrixY[i].length; j++) {
+                    column.push(matrixY[j][i]);
+                }
+                max = Math.max.apply(null, column);
+                min = Math.min.apply(null, column)
+                APlus.push(max);
+                AMinus.push(min);
+            }
+            console.log("A+");
+            console.log(APlus);
+            console.log("A-");
+            console.log(AMinus);
+            hitungJarakTerbobot(matrixY, APlus, AMinus)
+        }
+        function hitungJarakTerbobot(matrixY, APlus, AMinus) {
+            DPlus = [];
+            DMinus = [];
+            arrayOfPlus = [];
+            arrayOfMinus = [];
+            for (i = 0; i < matrixY.length; i++) {
+                for (j = 0; j < APlus.length; j++) {
+                    plus = Math.pow(matrixY[i][j] - APlus[j], 2);
+                    minus = Math.pow(matrixY[i][j] - AMinus[j], 2);
+                    arrayOfPlus.push(plus);
+                    arrayOfMinus.push(minus);
+                }
+                sum = 0;
+                sum2 = 0;
+                for (x = 0; x < arrayOfPlus.length; x++) {
+                    sum += arrayOfPlus[x];
+                    sum2 += arrayOfMinus[x];
+                }
+                DPlus.push(Math.sqrt(sum).toFixed(2));
+                DMinus.push(Math.sqrt(sum2).toFixed(2));
+                arrayOfPlus = [];
+                arrayOfMinus = [];
+            }
+
+            console.log("D+");
+            console.log(DPlus);
+            console.log("D-");
+            console.log(DMinus);
+            hitungNilaiPreferensi(DPlus, DMinus);
+
+        }
+        function hitungNilaiPreferensi(DPlus, DMinus) {
+            arrayOfV = [];
+            for (i = 0; i < DPlus.length; i++) {
+                V = parseFloat(DMinus[i]) / (parseFloat(DMinus[i]) + parseFloat(DPlus[i]));
+                arrayOfV.push(parseFloat(V.toFixed(2)));
+            }
+            console.log("Nilai Preferensi untuk setiap alternatif");
+            console.log(arrayOfV);
+            penentuan(arrayOfV);
+            persiapanRenderHasil();
+
+        }
+        function penentuan(arrayOfV) {
+            terpilih = Math.max.apply(null, arrayOfV);
+            pemenang = arrayOfV.indexOf(terpilih);
+        }
+        function persiapanRenderHasil() {
+            $("#formNilai").remove();
+            $("main").append('<div class="loader" id="loader"></div>');
+            setTimeout(renderHasil, 5000);
+        }
+        function renderHasil() {
+            $("#loader").remove();
+            $("main").append("<div class='hasil' id='hasil'>" +
+                '<p> Hasil perhitungan: </p>' +
+                '<table class="table" id="table" border=1>' +
+                '<tr id="tableHeader"> <th>Nama Calon</th><th>Hasil Akhir</th></tr>' +
+                "</div>");
+            for (i = 0; i < namaCalonDosen.length; i++) {
+                $("#tableHeader").after(
+                    '<tr>' +
+                    '<td>' + namaCalonDosen[i] + '</td>' +
+                    '<td>' + arrayOfV[i] + '</td>' +
+                    '</tr>'
+                );
+            }
+            $("#hasil").append(
+                '<h3> Dengan Hasil Diatas dapat disimpulkan bahwa yang lolos seleksi adalah: bapak ' + namaCalonDosen[pemenang] + '</h3>'
+            );
+        }
+        function hitungsumOfArray(num) {
+
+        }
+    </script>
+</body>
+
+</html>
