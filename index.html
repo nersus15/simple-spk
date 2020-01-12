@@ -191,7 +191,7 @@
             // membuat array maximum untuk memudahkan
             for (i = 0; i < matrixKeputusan.length; i++) {
                 column = [];
-                for (j = 0; j < matrixKeputusan[i].length; j++) {
+                for (j = 0; j < matrixKeputusan.length; j++) {
                     column.push(matrixKeputusan[j][i]);
                 }
                 max = Math.max.apply(null, column);
@@ -199,7 +199,7 @@
             }
             // menormalisasikan matriks keputusan
             for (i = 0; i < matrix.length; i++) {
-                for (j = 0; j < matrix[i].length; j++) {
+                for (j = 0; j < matrix.length; j++) {
                     if (j == 0) {
                         matrixNormal.push([(matrix[j][i] / maximum[i]).toFixed(2)]);
                     } else {
