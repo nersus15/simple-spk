@@ -4,17 +4,19 @@
 <head>
     <!-- Style -->
     <link rel="stylesheet" href="assets/css/style.css">
-
+    <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.css">
     <title>Sistem Pendukung Keputusan</title>
 </head>
 
 <body>
-    <div id="first">
-        <label for="jumlahAlternatif">Masukkan Jumlah Alternatif(Calon Dosen)</label>
-        <input type="number" name="" id="jumlahAlternatif">
-        <button id="init">Lanjutkan</button>
+    <div id="first" class="row">
+        <div class="col-md-3 ml-5 mt-5 form-group">
+            <label for="jumlahAlternatif">Masukkan Jumlah Alternatif(Calon Dosen)</label>
+            <input class="form-control" type="number" name="" id="jumlahAlternatif">
+            <button class="btn mt-3 btn-sm btn-outline-success" id="init">Lanjutkan</button>
+        </div>
     </div>
-    <main>
+    <main class="row">
 
     </main>
 
@@ -43,10 +45,10 @@
         function masukkanAlternatif(jumlah) {
             $("#first").remove();
             $("main").append(
-                '<div class="form" id="formDosen">' +
+                '<div class="col-md-3 ml-5 mt-5 form-group" id="formDosen">' +
                 '<label for="dosen">Nama Calon Dosen</label>' +
-                '<input type="text" name="" id="dosen">' +
-                '<button id="next" onclick="simpanNamaCalonDosen(' + jumlah + ')">Next</button>' +
+                '<input clas="form-control" type="text" name="" id="dosen">' +
+                '<button class="ml-2 btn btn-sm btn-outline-success" id="next" onclick="simpanNamaCalonDosen(' + jumlah + ')">Next</button>' +
                 '</div>'
             );
         }
@@ -61,21 +63,29 @@
             console.log("Nama Nama Calon");
             console.log(namaCalonDosen);
             $("#formDosen").remove();
-            $("main").append('<div id="formNilai"></div>');
+            $("main").append('<div class="col-md ml-5 mt-5" id="formNilai"></div>');
             for (i = 0; i < namaCalonDosen.length; i++) {
                 $("#formNilai").append(
-                    '<h3>Nama Calon Dosen: ' + namaCalonDosen[i] + '</h3>' +
-                    '<label for="ipk' + namaCalonDosen[i].split(" ").join("") + '"> IPK :</label>' +
-                    '<input min="0" max="4" id="ipk' + namaCalonDosen[i].split(" ").join("") + '" type="number" step="0.01" pattern="^\d+(?:\.\d{1,2})?$">' +
-                    '<label for="tpa' + namaCalonDosen[i].split(" ").join("") + '"> TPA :</label>' +
-                    '<input min="0" max=100 id="tpa' + namaCalonDosen[i].split(" ").join("") + '" type="number"> ' +
-                    '<label for="toefl' + namaCalonDosen[i].split(" ").join("") + '"> TOEFL :</label>' +
-                    '<input min="0" max=600 id="toefl' + namaCalonDosen[i].split(" ").join("") + '" type="number"> ' +
-                    '<label for="wawancara' + namaCalonDosen[i].split(" ").join("") + '"> WAWANCARA :</label>' +
-                    '<input min="0" max=100 id="wawancara' + namaCalonDosen[i].split(" ").join("") + '" type="number"> '
+                    '<h3 class="ml-3 mt-3">Nama Calon Dosen: ' + namaCalonDosen[i] + '</h3>' +
+                    '<div class=" form-group col-md-2">' +
+                    '<label for="ipk' + namaCalonDosen[i].split(" ").join("") + '"> IPK </label>' +
+                    '<input clas="form-control" min="0" max="4" id="ipk' + namaCalonDosen[i].split(" ").join("") + '" type="number" step="0.01" pattern="^\d+(?:\.\d{1,2})?$">' +
+                    '</div>' +
+                    '<div class=" form-group col-md-2">' +
+                    '<label for="tpa' + namaCalonDosen[i].split(" ").join("") + '"> TPA </label>' +
+                    '<input clas="form-control" min="0" max=100 id="tpa' + namaCalonDosen[i].split(" ").join("") + '" type="number"> ' +
+                    '</div>' +
+                    '<div class=" form-group col-md-2">' +
+                    '<label for="toefl' + namaCalonDosen[i].split(" ").join("") + '"> TOEFL </label>' +
+                    '<input clas="form-control" min="0" max=600 id="toefl' + namaCalonDosen[i].split(" ").join("") + '" type="number"> ' +
+                    '</div>' +
+                    '<div class=" form-group col-md-2">' +
+                    '<label for="wawancara' + namaCalonDosen[i].split(" ").join("") + '"> WAWANCARA </label>' +
+                    '<input clas="form-control" min="0" max=100 id="wawancara' + namaCalonDosen[i].split(" ").join("") + '" type="number"> ' +
+                    '</div>'
                 );
             }
-            $("#formNilai").append('</br><button id="simpan" onclick="simpanNilai()">Hitung</button>');
+            $("#formNilai").append('</br><button class="ml-1 mt-0 btn btn-sm btn-outline-success" id="simpan" onclick="simpanNilai()">Hitung</button>');
         }
         function simpanNilai() {
             arrayOfIPK = [];
@@ -294,7 +304,7 @@
         }
         function renderHasil() {
             $("#loader").remove();
-            $("main").append("<div class='hasil' id='hasil'>" +
+            $("main").append("<div class='hasil ml-5 col-md-4 table-responsive' id='hasil'>" +
                 '<p> Hasil perhitungan: </p>' +
                 '<table class="table" id="table" border=1>' +
                 '<tr id="tableHeader"> <th>Nama Calon</th><th>Hasil Akhir</th></tr>' +
@@ -308,7 +318,7 @@
                 );
             }
             $("#hasil").append(
-                '<h3> Dengan Hasil Diatas dapat disimpulkan bahwa yang lolos seleksi adalah: bapak ' + namaCalonDosen[pemenang] + '</h3>'
+                '<p> Dengan Hasil Diatas dapat disimpulkan bahwa yang lolos seleksi adalah: bapak <b>' + namaCalonDosen[pemenang] + ' </b></p>'
             );
         }
         function hitungsumOfArray(num) {
